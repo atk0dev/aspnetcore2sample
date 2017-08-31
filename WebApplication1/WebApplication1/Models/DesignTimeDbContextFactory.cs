@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using WebApplication1.Models;
 
-namespace WebApplication1
+namespace WebApplication1.Models
 {
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
