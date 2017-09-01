@@ -76,7 +76,29 @@ namespace WebApplication1.Controllers
 
                 if (result.Succeeded)
                 {
+                    user = await _userManager.FindByNameAsync(loginViewModel.UserName);
+
+                    if (user != null)
+                    {
+                        var loggedinUseresult = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, false, false);
+                        if (loggedinUseresult.Succeeded)
+                        {
+                            if (string.IsNullOrEmpty(loginViewModel.ReturnUrl))
+                                return RedirectToAction("Index", "Home");
+
+                            return Redirect(loginViewModel.ReturnUrl);
+                        }
+                    }
+
                     return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    foreach (var err in result.Errors)
+                    {
+                        ModelState.AddModelError(err.Code, err.Description);
+                    }
+                    return View(loginViewModel);
                 }
             }
             return View(loginViewModel);

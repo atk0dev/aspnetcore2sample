@@ -1,4 +1,2 @@
-
-load pies wo js 
-
-add errors while creating new user
+Add Account/Info view
+ 

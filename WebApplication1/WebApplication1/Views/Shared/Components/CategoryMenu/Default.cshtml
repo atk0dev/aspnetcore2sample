@@ -2,7 +2,7 @@
 
 <li class="dropdown">
     <a asp-controller="Pie"
-       asp-action="Index"
+       asp-action="All"
        class="dropdown-toggle" data-toggle="dropdown">Pies<b class="caret"></b></a>
     <ul class="dropdown-menu">
         @foreach (var category in Model)
@@ -13,6 +13,9 @@
             </li>
         }
         <li class="divider"></li>
+        <li>
+            <a asp-controller="Pie" asp-action="All" asp-route-Category="">Load more pies</a>
+        </li>
         <li>
             <a asp-controller="Pie" asp-action="List" asp-route-Category="">View all pies</a>
         </li>

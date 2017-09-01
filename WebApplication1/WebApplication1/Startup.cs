@@ -72,6 +72,11 @@ namespace WebApplication1
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
+                    name: "piedetails",
+                    template: "Pie/{action}/{id?}",
+                    defaults: new { Controller = "Pie", action = "List" });
+
+                routes.MapRoute(
                     name: "categoryfilter",
                     template: "Pie/{action}/{category?}",
                     defaults: new { Controller = "Pie", action = "List" });

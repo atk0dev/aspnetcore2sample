@@ -1,35 +1,64 @@
-﻿@model ShoppingCartViewModel
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity.EntityFrameworkCore
+
+@inject SignInManager<IdentityUser> SignInManager
+
+@model ShoppingCartViewModel
 
 <h2>Your shopping cart</h2>
 <h4>Here are the delicious pies in your shopping cart.</h4>
-<table class="table table-bordered table-striped">
+<table class="table">
     <thead>
-        <tr>
-            <th>Selected amount</th>
-            <th>Pie</th>
-            <th class="text-right">Price</th>
-            <th class="text-right">Subtotal</th>
-        </tr>
+    <tr>
+        <th>Selected amount</th>
+        <th>Pie</th>
+        <th class="text-right">Price</th>
+        <th class="text-right">Subtotal</th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
-        @foreach (var line in Model.ShoppingCart.ShoppingCartItems)
-        {
-            <tr>
-                <td class="text-center">@line.Amount</td>
-                <td class="text-left">@line.Pie.Name</td>
-                <td class="text-right">@line.Pie.Price.ToString("c")</td>
-                <td class="text-right">
-                    @((line.Amount * line.Pie.Price).ToString("c"))
-                </td>
-            </tr>
-        }
-    </tbody>
-    <tfoot>
+    @foreach (var line in Model.ShoppingCart.ShoppingCartItems)
+    {
         <tr>
-            <td colspan="3" class="text-right">Total:</td>
+            <td class="text-center">@line.Amount</td>
+            
+            <td class="text-left">
+                <a asp-controller="Pie" asp-action="Details" asp-route-id="@line.Pie.PieId">@line.Pie.Name</a>
+            </td>
+            <td class="text-right">@line.Pie.Price.ToString("c")</td>
             <td class="text-right">
-                @Model.ShoppingCartTotal.ToString("c")
+                @((line.Amount * line.Pie.Price).ToString("c"))
+            </td>
+            <td class="text-center">
+                <a asp-controller="ShoppingCart" asp-action="RemoveFromShoppingCart" asp-route-pieId="@line.Pie.PieId">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </a>
             </td>
         </tr>
+    }
+    </tbody>
+    <tfoot>
+    <tr>
+        <td colspan="3" class="text-right">Total:</td>
+        <td class="text-right">
+            @Model.ShoppingCartTotal.ToString("c")
+        </td>
+    </tr>
     </tfoot>
 </table>
+
+
+@if (SignInManager.IsSignedIn(User))
+{
+
+    <div class="text-center">
+        <a class="btn btn-primary" asp-controller="Order" asp-action="Checkout">Check out now</a>
+    </div>
+}
+else
+{
+    <div class="text-center">
+        <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Log in</a>
+    </div>
+}

@@ -21,15 +21,15 @@ namespace WebApplication1.Controllers
             _categoryRepository = categoryRepository;
         }
 
-        //public ViewResult List()
-        //{
-        //    PiesListViewModel piesListViewModel = new PiesListViewModel();
-        //    piesListViewModel.Pies = _pieRepository.Pies;
+        public ViewResult All()
+        {
+            PiesListViewModel piesListViewModel = new PiesListViewModel();
+            piesListViewModel.Pies = null;
 
-        //    piesListViewModel.CurrentCategory = "Cheese cakes";
+            piesListViewModel.CurrentCategory = "";
 
-        //    return View(piesListViewModel);
-        //}
+            return View(piesListViewModel);
+        }
 
         public ViewResult List(string category)
         {
