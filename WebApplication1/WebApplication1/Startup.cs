@@ -21,7 +21,8 @@ namespace WebApplication1
         {
             _configurationRoot = new ConfigurationBuilder()
                 .SetBasePath(hostingEnvironment.ContentRootPath)
-                .AddJsonFile("appsettings.json")
+                //.AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json", true)
                 .Build();
         }
 
