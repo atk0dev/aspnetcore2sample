@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using WebApplication1.Models;
 
-namespace WebApplication1.Models
+namespace WebApplication1.Data
 {
     public class AppDbContext: IdentityDbContext<IdentityUser>
     {
@@ -20,5 +21,9 @@ namespace WebApplication1.Models
         public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+
+        public DbSet<City> Cities { get; set; }
+        public DbSet<PointOfInterest> PointsOfInterest { get; set; }
+
     }
 }

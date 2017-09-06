@@ -7,15 +7,22 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
+using WebApplication1.Data;
+using WebApplication1.Repositories;
+using WebApplication1.Services;
 
 namespace WebApplication1
 {
     public class Startup
     {
+        public static IConfigurationRoot Configuration;
+
         private IConfigurationRoot _configurationRoot;
 
         public Startup(IHostingEnvironment hostingEnvironment)
@@ -23,8 +30,13 @@ namespace WebApplication1
             _configurationRoot = new ConfigurationBuilder()
                 .SetBasePath(hostingEnvironment.ContentRootPath)
                 //.AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json", true)
+                //.AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json", true)
+                .AddJsonFile("appSettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appSettings.{hostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
                 .Build();
+
+            Configuration = _configurationRoot;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -40,13 +52,22 @@ namespace WebApplication1
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>();
 
+#if DEBUG
+            services.AddTransient<IMailService, LocalMailService>();
+#else
+            services.AddTransient<IMailService, CloudMailService>();
+#endif
+
             services.AddTransient<IPieRepository, PieRepository>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<ShoppingCart>(sp => ShoppingCart.GetCart(sp));
             services.AddTransient<IOrderRepository, OrderRepository>();
+            services.AddScoped<ICityInfoRepository, CityInfoRepository>();
 
-            services.AddMvc();
+            services.AddMvc()
+                .AddMvcOptions(o => o.OutputFormatters.Add(
+                    new XmlDataContractSerializerOutputFormatter()));
 
             services.AddMemoryCache();
             services.AddSession();
@@ -57,6 +78,10 @@ namespace WebApplication1
         {
 
             loggerFactory.AddConsole();
+            loggerFactory.AddDebug();
+
+            //loggerFactory.AddProvider(new NLog.Extensions.Logging.NLogLoggerProvider());
+            loggerFactory.AddNLog();
 
             if (env.IsDevelopment())
             {
@@ -68,9 +93,20 @@ namespace WebApplication1
                 app.UseExceptionHandler("/AppException");
             }
 
+            AutoMapper.Mapper.Initialize(cfg =>
+            {
+                cfg.CreateMap<Models.City, Dto.CityWithoutPointsOfInterestDto>();
+                cfg.CreateMap<Models.City, Dto.CityDto>();
+                cfg.CreateMap<Models.PointOfInterest, Dto.PointOfInterestDto>();
+                cfg.CreateMap<Dto.PointOfInterestForCreationDto, Models.PointOfInterest>();
+                cfg.CreateMap<Dto.PointOfInterestForUpdateDto, Models.PointOfInterest>();
+                cfg.CreateMap<Models.PointOfInterest, Dto.PointOfInterestForUpdateDto>();
+            });
+
             app.UseStaticFiles();
             app.UseSession();
-            app.UseIdentity();
+            //app.UseIdentity();
+            app.UseAuthentication();
 
             //app.UseMvcWithDefaultRoute();
             

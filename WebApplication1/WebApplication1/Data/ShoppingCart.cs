@@ -4,8 +4,9 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using WebApplication1.Models;
 
-namespace WebApplication1.Models
+namespace WebApplication1.Data
 {
     public class ShoppingCart
     {
